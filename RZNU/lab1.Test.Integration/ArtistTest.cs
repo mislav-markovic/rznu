@@ -99,5 +99,27 @@ namespace lab1.Test.Integration
 			Assert.NotNull(resp.Data);
 			Assert.NotEmpty(resp.Data);
 		}
+
+		[Fact]
+		public void DeletingArtistDeletesWorks()
+		{
+			var authId = Helper.CreateTestArtist(_client);
+			var paintId = Helper.AddPaintingToArtist(authId, _client);
+
+			var worksGetReq = new RestRequest("artist/{id}/paintings");
+			worksGetReq.AddUrlSegment("id", authId.ToString());
+			var resp = _client.RestClient.Execute<List<ViewPainting>>(worksGetReq);
+
+			Helper.DeleteTestArtist(authId, _client);
+
+			var paintGetReq = new RestRequest("painting/{id}");
+			paintGetReq.AddUrlSegment("id", paintId.ToString());
+			var paintGetResp = _client.RestClient.Execute<ViewPainting>(paintGetReq);
+
+			Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+			Assert.NotNull(resp.Data);
+			Assert.NotEmpty(resp.Data);
+			Assert.Equal(HttpStatusCode.NotFound, paintGetResp.StatusCode);
+		}
 	}
 }
