@@ -4,12 +4,14 @@ using lab1.Data;
 using lab1.Models;
 using lab1.Models.Artist;
 using lab1.Models.Painting;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace lab1.Controllers
 {
+	[Authorize]
 	[Produces("application/json")]
 	[Route("api/[controller]")]
 	[ApiController]

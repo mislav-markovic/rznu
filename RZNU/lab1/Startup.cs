@@ -1,4 +1,5 @@
 ﻿using lab1.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -28,9 +29,14 @@ namespace lab1
 
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new OpenApiInfo { Title = "RZNU", Version = "LAB1" });
+				c.SwaggerDoc("v1", new OpenApiInfo {Title = "RZNU", Version = "LAB1"});
 				c.EnableAnnotations();
 			});
+
+			services.AddAuthentication("BasicAuthentication")
+				.AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+			services.AddScoped<IUserService, UserService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,12 +48,18 @@ namespace lab1
 				app.UseHsts();
 
 			app.UseHttpsRedirection();
-			app.UseMvc();
+
 			app.UseSwagger();
-			app.UseSwaggerUI(c =>
-			{
-				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-			});
+			app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
+
+			app.UseCors(x => x
+				.AllowAnyOrigin()
+				.AllowAnyMethod()
+				.AllowAnyHeader()
+				.AllowCredentials());
+
+			app.UseAuthentication();
+			app.UseMvc();
 		}
 	}
 }
