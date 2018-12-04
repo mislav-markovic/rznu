@@ -5,6 +5,7 @@ namespace lab1.Models.Painting
 {
 	public class ViewPainting
 	{
+		public ViewPainting() { }
 		public ViewPainting(PaintingDto dto)
 		{
 			Id = dto.Id;

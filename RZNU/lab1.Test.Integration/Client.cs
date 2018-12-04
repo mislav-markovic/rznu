@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Net;
+using lab1.Models;
 using RestSharp;
+using Xunit;
 
 namespace lab1.Test.Integration
 {
@@ -21,7 +23,11 @@ namespace lab1.Test.Integration
 		{
 			var req = new RestRequest("login", Method.POST);
 			req.AddParameter("application/json-patch+json", "{\"username\":\"test\",\"password\":\"test\"}", ParameterType.RequestBody);
-			var resp = RestClient.Execute(req);
+			var resp = RestClient.Execute<User>(req);
+
+			Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+			Assert.Equal("test", resp.Data.Username);
+			Assert.Null(resp.Data.Password);
 		}
 	}
 }

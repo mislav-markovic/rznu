@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using lab1.Models.Artist;
+using lab1.Models.Painting;
 using Newtonsoft.Json;
 using RestSharp;
 using Xunit;
@@ -35,12 +36,12 @@ namespace lab1.Test.Integration
 		[Fact]
 		public void GetById()
 		{
-			var id = CreateTestArtist();
+			var id = Helper.CreateTestArtist(_client);
 			var req = new RestRequest("artist/{id}", Method.GET);
 			req.AddUrlSegment("id", id.ToString());
 			var resp = _client.RestClient.Execute<ViewArtist>(req);
 
-			DeleteTestArtist(id);
+			Helper.DeleteTestArtist(id, _client);
 			Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
 			Assert.Equal("test", resp.Data.Name);
 			Assert.Equal(10, resp.Data.YearOfBirth);
@@ -49,7 +50,7 @@ namespace lab1.Test.Integration
 		[Fact]
 		public void PutExistingId()
 		{
-			var id = CreateTestArtist();
+			var id = Helper.CreateTestArtist(_client);
 			var req = new RestRequest("artist/{id}", Method.PUT);
 			req.AddUrlSegment("id", id.ToString());
 
@@ -62,7 +63,7 @@ namespace lab1.Test.Integration
 			getReq.AddUrlSegment("id", id.ToString());
 			var resp = _client.RestClient.Execute<ViewArtist>(getReq, Method.GET);
 
-			DeleteTestArtist(id);
+			Helper.DeleteTestArtist(id,_client);
 			Assert.Equal(HttpStatusCode.NoContent, putResp.StatusCode);
 			Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
 			Assert.Equal("test2", resp.Data.Name);
@@ -74,18 +75,29 @@ namespace lab1.Test.Integration
 		{
 			var req = new RestRequest("artist/{id}", Method.PUT);
 			req.AddUrlSegment("id", "-15");
-			req.AddParameter("application/json", _serializedArtist, ParameterType.RequestBody);
+			req.AddParameter("application/json", Helper._serializedArtist, ParameterType.RequestBody);
 			var putResp = _client.RestClient.Execute<ViewArtist>(req);
 
-			DeleteTestArtist(putResp.Data.Id);
+			Helper.DeleteTestArtist(putResp.Data.Id, _client);
 			Assert.Equal(HttpStatusCode.Created, putResp.StatusCode);
 			Assert.Equal("test", putResp.Data.Name);
 			Assert.Equal(10, putResp.Data.YearOfBirth);
 		}
 
+		[Fact]
 		public void GetArtistWorks()
 		{
-			var id
+			var id = Helper.CreateTestArtist(_client);
+			Helper.AddPaintingToArtist(id, _client);
+
+			var req = new RestRequest("artist/{id}/paintings");
+			req.AddUrlSegment("id", id.ToString());
+			var resp = _client.RestClient.Execute<List<ViewPainting>>(req);
+
+			Helper.DeleteTestArtist(id, _client);
+			Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
+			Assert.NotNull(resp.Data);
+			Assert.NotEmpty(resp.Data);
 		}
 	}
 }
