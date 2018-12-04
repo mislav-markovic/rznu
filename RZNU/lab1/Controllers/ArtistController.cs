@@ -33,8 +33,9 @@ namespace lab1.Controllers
 		[SwaggerOperation(Summary = "Gets all artists.", Description = "Returns all artists",
 			OperationId = "GetArtists")]
 		[SwaggerResponse(200, "Returns all artists.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpGet]
-		public ActionResult<IEnumerable<ViewArtist>> Get()
+		public ActionResult<List<ViewArtist>> Get()
 		{
 			return _context.Artist.Include(a => a.Works).Select(a => new ViewArtist(a)).ToList();
 		}
@@ -51,6 +52,7 @@ namespace lab1.Controllers
 			OperationId = "GetArtist")]
 		[SwaggerResponse(404, "Artist with requested ID does not exist.")]
 		[SwaggerResponse(200, "Returns artist")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpGet("{id}", Name = "GetArtist")]
 		public ActionResult<ViewArtist> Get(int id)
 		{
@@ -71,6 +73,7 @@ namespace lab1.Controllers
 			Description = "Requested artists works", OperationId = "GetArtistWorks")]
 		[SwaggerResponse(200, "Returns list of paintings.")]
 		[SwaggerResponse(404, "Artist with requested ID does not exist.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpGet("{id}/paintings", Name = "GetWorks")]
 		public ActionResult<IEnumerable<ViewPainting>> GetPaintings(int id)
 		{
@@ -90,6 +93,7 @@ namespace lab1.Controllers
 			Description = "Newly created artist. Parameter represents data to be used for new artist.",
 			OperationId = "PostArtist")]
 		[SwaggerResponse(201, "Sets location header to newly created resource and returns it as json.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpPost]
 		public IActionResult Post([FromBody] CreateArtist value)
 		{
@@ -119,6 +123,7 @@ namespace lab1.Controllers
 			OperationId = "PutArtist")]
 		[SwaggerResponse(204, "Existing object was updated with given values and nothing is returned.")]
 		[SwaggerResponse(201, "Creates new object with given values and returns it.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpPut("{id}")]
 		public IActionResult Put(int id, [FromBody] CreateArtist value)
 		{
@@ -153,6 +158,7 @@ namespace lab1.Controllers
 			OperationId = "DeleteArtist")]
 		[SwaggerResponse(404, "Resource with given Id does not exist, nothing happens.")]
 		[SwaggerResponse(204, "Resource deleted, nothing returned.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpDelete("{id}")]
 		public IActionResult Delete(int id)
 		{

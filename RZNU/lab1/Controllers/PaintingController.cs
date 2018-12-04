@@ -28,6 +28,7 @@ namespace lab1.Controllers
 		[SwaggerOperation(Summary = "Gets all paintings.", Description = "Returns list of all paintings.",
 			OperationId = "GetPaintings")]
 		[SwaggerResponse(200, "Returns all paintings successfully.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpGet]
 		public ActionResult<IEnumerable<ViewPainting>> Get()
 		{
@@ -41,6 +42,7 @@ namespace lab1.Controllers
 			OperationId = "GetPainting")]
 		[SwaggerResponse(404, "Painting with requested id does not exist.")]
 		[SwaggerResponse(200, "Painting successfully returned.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpGet("{id}", Name = "GetPainting")]
 		public ActionResult<ViewPainting> Get(int id)
 		{
@@ -50,13 +52,16 @@ namespace lab1.Controllers
 		}
 
 		// GET api/painting/5/author
-		[SwaggerOperation(Summary = "Returns artist for specific painting.", Description = "Painting with given id must exist", OperationId = "GetPaintingAuthor")]
+		[SwaggerOperation(Summary = "Returns artist for specific painting.",
+			Description = "Painting with given id must exist", OperationId = "GetPaintingAuthor")]
 		[SwaggerResponse(404, "Painting with given id does not exist")]
 		[SwaggerResponse(200, "Paintings author returned.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpGet("{id}/author", Name = "GetAuthor")]
 		public ActionResult<ViewArtist> GetPaintings(int id)
 		{
-			var result = _context.Painting.Include(p => p.Author).ThenInclude(a => a.Works)?.FirstOrDefault(p => p.Id == id);
+			var result = _context.Painting.Include(p => p.Author).ThenInclude(a => a.Works)
+				?.FirstOrDefault(p => p.Id == id);
 			if (result == null) return NotFound();
 			return new ViewArtist(result.Author);
 		}
@@ -66,6 +71,7 @@ namespace lab1.Controllers
 			OperationId = "PostPainting")]
 		[SwaggerResponse(400, "Bad Request is returned when either data is missing or author id does not exist")]
 		[SwaggerResponse(201, "Returns newly created painting.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpPost]
 		public IActionResult Post([FromBody] CreatePainting value)
 		{
@@ -87,6 +93,7 @@ namespace lab1.Controllers
 		[SwaggerResponse(400, "Request with non existing author id is given.")]
 		[SwaggerResponse(201, "Returns newly created painting.")]
 		[SwaggerResponse(204, "When resource is updated nothing is returned.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpPut("{id}")]
 		public IActionResult Put(int id, [FromBody] CreatePainting value)
 		{
@@ -120,6 +127,7 @@ namespace lab1.Controllers
 			OperationId = "DeletePainting")]
 		[SwaggerResponse(204, "Painting is deleted and nothing is returned.")]
 		[SwaggerResponse(404, "Painting with requested id does not exist.")]
+		[SwaggerResponse(401, "Not logged in.")]
 		[HttpDelete("{id}")]
 		public IActionResult Delete(int id)
 		{

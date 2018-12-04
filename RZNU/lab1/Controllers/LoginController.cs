@@ -1,6 +1,7 @@
 ﻿using lab1.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace lab1.Controllers
 {
@@ -15,6 +16,9 @@ namespace lab1.Controllers
 			_userService = userService;
 		}
 
+		[SwaggerOperation(Summary = "Login", Description = "Send username and password to login and gain access to the rest of methods.", OperationId = "Login")]
+		[SwaggerResponse(400, "Incorrect username/password combination")]
+		[SwaggerResponse(200, "Successfully logged in.")]
 		[AllowAnonymous]
 		[HttpPost]
 		public IActionResult Authenticate([FromBody]User userParam)
